@@ -1,0 +1,47 @@
+import { Request, Response, NextFunction } from 'express';
+import { AppError } from '../utils/errors.js';
+
+const errorMiddleware = (err: any, req: Request, res: Response, next: NextFunction): void => {
+  try {
+    let error = { ...err };
+    error.message = err.message;
+
+    console.error(err);
+
+    // handle custom AppError
+    if (err instanceof AppError) {
+      res.status(err.statusCode).json({
+        success: false,
+        error: err.message,
+      });
+      return;
+    }
+
+    // Mongoose bad objectId
+    if (err.name === 'CastError') {
+      const message = 'Resource not found';
+      error = { message, statusCode: 404 };
+    }
+
+    // Mongoose duplicate key
+    if (err.code === 11000) {
+      const message = 'Duplicate field value entered';
+      error = { message, statusCode: 400 };
+    }
+
+    // Mongoose validation error
+    if (err.name === 'ValidationError') {
+      const message = Object.values(err.errors || {}).map((val: any) => val.message);
+      error = { message: message.join(', '), statusCode: 400 };
+    }
+
+    res.status((error as any).statusCode || 500).json({
+      success: false,
+      error: error.message || 'Server Error',
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export default errorMiddleware;
