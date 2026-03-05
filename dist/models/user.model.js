@@ -1,12 +1,11 @@
-import mongoose from "mongoose";
-
+import mongoose from 'mongoose';
 const userSchema = new mongoose.Schema({
     name: {
-        type: String, 
+        type: String,
         required: [true, 'User Name is required'],
         trim: true,
         minLength: 2,
-        maxLength: 50
+        maxLength: 50,
     },
     email: {
         type: String,
@@ -16,7 +15,7 @@ const userSchema = new mongoose.Schema({
         lowerCase: true,
         match: [
             /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-            'Please enter a valid email address'
+            'Please enter a valid email address',
         ],
     },
     password: {
@@ -24,7 +23,7 @@ const userSchema = new mongoose.Schema({
         required: [true, 'User Password is required'],
         minLength: 6,
     },
-}, {timestamps: true});
-
+}, { timestamps: true });
 const User = mongoose.model('User', userSchema);
 export default User;
+//# sourceMappingURL=user.model.js.map

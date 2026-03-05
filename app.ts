@@ -1,4 +1,5 @@
-import express from 'express';
+/// <reference path="./types/index.d.ts" />
+import express, { Request, Response, NextFunction } from 'express';
 import { PORT } from './config/env.js';
 import userRouter from './routes/user.routes.js';
 import authRouter from './routes/auth.routes.js';
@@ -8,12 +9,16 @@ import errorMiddleware from './middleware/error.middleware.js';
 import cookieParser from 'cookie-parser';
 import arcjetMiddleware from './middleware/arcjet.middleware.js';
 import workFlowRouter from './routes/workflow.routes.js';
+import helmet from 'helmet';
+import cors from 'cors';
 
 const app = express();
 
 app.use(express.json());
-app.use(express.urlencoded({extended: false}));
+app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(helmet());
+app.use(cors());
 app.use(arcjetMiddleware);
 
 app.use('/api/v1/auth', authRouter);
@@ -23,14 +28,13 @@ app.use('/api/v1/workflows', workFlowRouter);
 
 app.use(errorMiddleware);
 
-app.get('/', (req, res) => {
-    res.send('Welcome to Subscription Tracker!');
+app.get('/', (req: Request, res: Response) => {
+  res.send('Welcome to Subscription Tracker!');
 });
 
-app.listen(PORT, async() => {
-    console.log(`Subscription tracker API is running on http://localhost:${PORT}`)
-
-   await connectToDatabase();
+app.listen(PORT, async () => {
+  console.log(`Subscription tracker API is running on http://localhost:${PORT}`);
+  await connectToDatabase();
 });
 
 export default app;
